@@ -1,0 +1,22 @@
+{
+  "name": "rsk-token-faucet-contract",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rsksmart/rsk-token-faucet-contract.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rsksmart/rsk-token-faucet-contract/issues"
+  },
+  "homepage": "https://github.com/rsksmart/rsk-token-faucet-contract#readme",
+  "devDependencies": {
+    "truffle": "^5.4.17"
+  }
+}
