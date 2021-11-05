@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/rsksmart/rsk-token-faucet-contract#readme",
   "devDependencies": {
+    "@rsksmart/erc677": "^2.0.0",
     "truffle": "^5.4.17"
   }
 }
