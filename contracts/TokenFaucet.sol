@@ -6,20 +6,22 @@ import "./IERC20Extended.sol";
 contract TokenFaucet {
     address public owner; // owner of the faucet
     uint256 public timer = 1 days; // timer of dispense time
-    uint256 public  dispenseValue = 1; // value for every dispense
+    uint256 public  dispenseValue = 10000000000000000000; // value for every dispense
+    string public constant msgError = "Not enough time between dispenses"; // message error for timePassed() modifier
+    string public constant msgOwner = "Owner-only function"; // message error for onlyOwner() modifier
 
     mapping(address => mapping(address => uint256)) public cannotDispenseUntil; // time until user can dispense for every token
 
     // verification account already asked for a dispense before enough time has passed
     modifier timePassed(IERC20Extended token, address to) {
-        require(cannotDispenseUntil[address(token)][msg.sender] < block.timestamp, "Not enough time between dispenses");
+        require(cannotDispenseUntil[address(token)][msg.sender] < block.timestamp, msgError);
         _;
         cannotDispenseUntil[address(token)][msg.sender] = block.timestamp + timer;
     }  
 
     // modifier for owner-only functions
     modifier onlyOwner() {
-        require(msg.sender == owner, "Owner-only function");
+        require(msg.sender == owner, msgOwner);
         _;
     } 
 
