@@ -75,5 +75,23 @@ contract("Token Faucet", (accounts) => {
     // assert
     assert(balance.eq(balanceShouldHave));
   });
-});
+  it("owner changes timers value", async () => {
+    const newTimer = web3.utils.toBN(10);
+    await this.faucet.selectTime(newTimer, {
+      from: accounts[0],
+    });
+    const timer = await this.faucet.timer();
+    // assert
+    assert(timer.eq(newTimer));
+  });
 
+  it("owner changes dispenseValue", async () => {
+    const newDispenseValue = web3.utils.toBN(10);
+    await this.faucet.selectDispenseValue(newDispenseValue, {
+      from: accounts[0],
+    });
+    const dispenseValue = await this.faucet.dispenseValue();
+    // assert
+    assert(dispenseValue.eq(newDispenseValue));
+  });
+});
