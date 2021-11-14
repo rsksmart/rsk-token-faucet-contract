@@ -60,7 +60,7 @@ contract("Token Faucet", (accounts) => {
     await this.faucet.dispense(this.tuki.address, accounts[1], {
       from: accounts[1],
     });
-    const timer = await this.faucet.timer() * 1;
+    const timer = (await this.faucet.timer()) * 1 + 1;
     const balanceShouldHave = web3.utils.toBN(
       2 * (await this.faucet.dispenseValue())
     );
