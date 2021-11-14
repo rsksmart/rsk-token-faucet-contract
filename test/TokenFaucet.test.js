@@ -83,7 +83,7 @@ contract("Token Faucet", (accounts) => {
     assert(dispenseValue.eq(newDispenseValue));
   });
 
-  it.only("owner changes owner", async () => {
+  it("owner changes owner", async () => {
     const newOwner = accounts[1];
     //act
     await this.faucet.setOwner(newOwner, {
