@@ -19,5 +19,10 @@
   "devDependencies": {
     "@rsksmart/erc677": "^2.0.0",
     "truffle": "^5.4.17"
+  },
+  "dependencies": {
+    "@truffle/hdwallet-provider": "^1.6.0",
+    "ganache-time-traveler": "^1.0.16",
+    "truffle-flattener": "^1.5.0"
   }
 }

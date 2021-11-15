@@ -2,28 +2,45 @@ pragma solidity ^0.8.0;
 
 import "./IERC20Extended.sol";
 
+// Multi-Token Faucet
 contract TokenFaucet {
-    address public owner;
+    address public owner; // owner of the faucet
+    uint256 public timer = 1 days; // timer of dispense time
+    uint256 public dispenseValue = 10000000000000000000; // value for every dispense
+    string public constant msgError = "Not enough time between dispenses"; // message error for timePassed() modifier
+    string public constant msgOwner = "Owner-only function"; // message error for onlyOwner() modifier
 
-    uint256 public constant dispenseValue = 1;
+    mapping(address => mapping(address => uint256)) public cannotDispenseUntil; // time until user can dispense for every token
 
-    mapping(address => mapping(address => uint256)) public cannotDispenseUntil;
-
-    modifier onceADay(IERC20Extended token, address to) {
-        require(cannotDispenseUntil[address(token)][msg.sender] < block.timestamp, "You must wait a day between dispenses");
+    // verification account already asked for a dispense before enough time has passed
+    modifier timePassed(IERC20Extended token, address to) {
+        require(
+            cannotDispenseUntil[address(token)][msg.sender] < block.timestamp,
+            msgError
+        );
         _;
-        cannotDispenseUntil[address(token)][msg.sender] = block.timestamp + 1 days;
+        cannotDispenseUntil[address(token)][msg.sender] =
+            block.timestamp +
+            timer;
     }
 
+    // modifier for owner-only functions
     modifier onlyOwner() {
-        require(msg.sender == owner, "Owner-only function");
+        require(msg.sender == owner, msgOwner);
         _;
     }
 
-    function dispense(IERC20Extended token, address to) public onceADay(token, to) {
+    // ask for dispense
+    function dispense(IERC20Extended token, address to)
+        public
+        timePassed(token, to)
+    {
         token.transfer(to, dispenseValue);
     }
 
+    // OWNER FUNCTIONS:
+
+    // arbitrary withdrawal of any token (owner-only)
     function withdraw(
         IERC20Extended token,
         address to,
@@ -32,6 +49,22 @@ contract TokenFaucet {
         token.transfer(to, value);
     }
 
+    // set timer reset time (owner-only)
+    function setTimer(uint256 _timer) public onlyOwner {
+        timer = _timer;
+    }
+
+    // set dispense value (owner-only)
+    function setDispenseValue(uint256 _dispenseValue) public onlyOwner {
+        dispenseValue = _dispenseValue;
+    }
+
+    // set owner (owner-only)
+    function setOwner(address _owner) public onlyOwner {
+        owner = _owner;
+    }
+
+    // constructor
     constructor() public {
         owner = msg.sender;
     }
