@@ -13,7 +13,7 @@ contract("Token Faucet", (accounts) => {
       "TUKI"
     );
     this.faucet = await TokenFaucet.new();
-    this.tuki.transfer(
+    await this.tuki.transfer(
       this.faucet.address,
       web3.utils.toBN("10000000000000000000000")
     );
@@ -94,13 +94,35 @@ contract("Token Faucet", (accounts) => {
     assert.equal(owner, newOwner);
   });
 
+  it("owner withdraws", async () => {
+    const previousFaucetBalance = await this.tuki.balanceOf(this.faucet.address);
+    //act
+    await this.faucet.withdraw(this.tuki.address, accounts[1], previousFaucetBalance, { from: accounts[0] })
+    //assert
+    const afterFaucetBalance = await this.tuki.balanceOf(this.faucet.address);
+    const balanceAfterWithdraw = await this.tuki.balanceOf(accounts[1]);
+    assert(balanceAfterWithdraw.eq(previousFaucetBalance));
+    assert(afterFaucetBalance.eq(web3.utils.toBN("0")));
+  });
+
+  it("does not allow withdraw by not owner", async () => {
+    const msgOwner = await this.faucet.msgOwner();
+    const previousFaucetBalance = await this.tuki.balanceOf(this.faucet.address);
+    // act, assert
+    await assert.rejects(
+      () => 
+        this.faucet.withdraw(this.tuki.address, accounts[1], previousFaucetBalance, { from: accounts[1] })
+      ),
+      msgOwner;
+  });
+
   it("does not allow double dispense", async () => {
     await this.faucet.dispense(this.tuki.address, accounts[1], {
       from: accounts[1],
     });
     const msgError = await this.faucet.msgError();
     // act, assert
-    assert.rejects(
+    await assert.rejects(
       () =>
         this.faucet.dispense(this.tuki.address, accounts[1], {
           from: accounts[1],
@@ -112,7 +134,7 @@ contract("Token Faucet", (accounts) => {
   it("does not allow to change timers value by not owner", async () => {
     const newTimer = web3.utils.toBN(10);
     const msgOwner = await this.faucet.msgOwner();
-    //atc, assert
+    //act, assert
     await assert.rejects(
       () =>
         this.faucet.setTimer(newTimer, {
@@ -125,7 +147,7 @@ contract("Token Faucet", (accounts) => {
   it("does not allow to change dispenseValue by not owner", async () => {
     const newDispenseValue = web3.utils.toBN(10);
     const msgOwner = await this.faucet.msgOwner();
-    //atc, assert
+    //act, assert
     await assert.rejects(
       () =>
         this.faucet.setDispenseValue(newDispenseValue, {
@@ -138,7 +160,7 @@ contract("Token Faucet", (accounts) => {
   it("does not allow to change owner by not owner", async () => {
     const newOwner = accounts[1];
     const msgOwner = await this.faucet.msgOwner();
-    //atc, assert
+    //act, assert
     await assert.rejects(
       () =>
         this.faucet.setOwner(newOwner, {
