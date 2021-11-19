@@ -20,9 +20,13 @@
 
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 //
-// const fs = require('fs');
-const mnemonic = 'extend enjoy dune fury speed oxygen velvet bunker note fresh smooth disagree donkey weather nerve'
-
+const fs = require('fs');
+let mnemonic
+try {
+  mnemonic = fs.readFileSync(".secret").toString().trim();
+} catch {
+  console.log("No .secret")
+}
 module.exports = {
   /**
    * Networks define how you connect to your ethereum client and let you set the
