@@ -64,5 +64,6 @@ npx truffle migrate --network rskTestnet
 ## Deployments
 
 **TokenFaucet address**: `0xEa184604347fD5cedE89217E1aB1Eed322c8c98B`
+
 **BalanceFetcher address**: `0x5cAD4a45F86E35bF130DED4ecE450867f9EE7CFe`
 
