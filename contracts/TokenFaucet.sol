@@ -5,35 +5,35 @@ import "./IERC20Extended.sol";
 // Multi-Token Faucet
 contract TokenFaucet {
     address public owner; // owner of the faucet
-    uint256 public timer = 1 days; // timer of dispense time
+    uint256 public period = 1 days; // period of dispense time
     uint256 public dispenseValue = 10000000000000000000; // value for every dispense
-    string public constant msgError = "Not enough time between dispenses"; // message error for timePassed() modifier
-    string public constant msgOwner = "Owner-only function"; // message error for onlyOwner() modifier
+    string public constant msgErrorTime = "Not enough time between dispenses"; // message error for onlyOnceInPeriod() modifier
+    string public constant msgErrorOwner = "Owner-only function"; // message error for onlyOwner() modifier
 
     mapping(address => mapping(address => uint256)) public cannotDispenseUntil; // time until user can dispense for every token
 
     // verification account already asked for a dispense before enough time has passed
-    modifier timePassed(IERC20Extended token, address to) {
+    modifier onlyOnceInPeriod(IERC20Extended token, address to) {
         require(
             cannotDispenseUntil[address(token)][msg.sender] < block.timestamp,
-            msgError
+            msgErrorTime
         );
         _;
         cannotDispenseUntil[address(token)][msg.sender] =
             block.timestamp +
-            timer;
+            period;
     }
 
     // modifier for owner-only functions
     modifier onlyOwner() {
-        require(msg.sender == owner, msgOwner);
+        require(msg.sender == owner, msgErrorOwner);
         _;
     }
 
     // ask for dispense
     function dispense(IERC20Extended token, address to)
         public
-        timePassed(token, to)
+        onlyOnceInPeriod(token, to)
     {
         token.transfer(to, dispenseValue);
     }
@@ -49,9 +49,9 @@ contract TokenFaucet {
         token.transfer(to, value);
     }
 
-    // set timer reset time (owner-only)
-    function setTimer(uint256 _timer) public onlyOwner {
-        timer = _timer;
+    // set period reset time (owner-only)
+    function setPeriod(uint256 _period) public onlyOwner {
+        period = _period;
     }
 
     // set dispense value (owner-only)
