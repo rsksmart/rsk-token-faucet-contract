@@ -49,9 +49,9 @@ npx truffle run coverage
 
 ### Branching model
 
-- `master` has latest release. Merge into `main` will deploy to npm. Do merge commits.
-- Use branches pointing to `master` to add new PRs.
-- Do external PRs against latest commit in `master`.
+- `main` has latest release. Merge into `main` will deploy to npm. Do merge commits.
+- Use branches pointing to `main` to add new PRs.
+- Do external PRs against latest commit in `main`.
 
 ### Deploy
 
