@@ -41,16 +41,16 @@ contract("Token Faucet", (accounts) => {
     assert(balance.eq(dispenseValue));
   });
 
-  it("dispense second time after timers done", async () => {
+  it("dispense second time after period done", async () => {
     await this.faucet.dispense(this.tuki.address, accounts[1], {
       from: accounts[1],
     });
-    const timer = (await this.faucet.timer()) * 1 + 1;
+    const period = (await this.faucet.period()) * 1 + 1;
     const balanceShouldHave = web3.utils.toBN(
       2 * (await this.faucet.dispenseValue())
     );
     // act
-    await timeMachine.advanceTimeAndBlock(timer);
+    await timeMachine.advanceTimeAndBlock(period);
     await this.faucet.dispense(this.tuki.address, accounts[1], {
       from: accounts[1],
     });
@@ -61,15 +61,15 @@ contract("Token Faucet", (accounts) => {
     assert(balance.eq(balanceShouldHave));
   });
 
-  it("owner changes timers value", async () => {
-    const newTimer = web3.utils.toBN(10);
+  it("owner changes period value", async () => {
+    const newPeriod = web3.utils.toBN(10);
     //act
-    await this.faucet.setTimer(newTimer, {
+    await this.faucet.setPeriod(newPeriod, {
       from: accounts[0],
     });
-    const timer = await this.faucet.timer();
+    const period = await this.faucet.period();
     // assert
-    assert(timer.eq(newTimer));
+    assert(period.eq(newPeriod));
   });
 
   it("owner changes dispenseValue", async () => {
@@ -106,67 +106,67 @@ contract("Token Faucet", (accounts) => {
   });
 
   it("does not allow withdraw by not owner", async () => {
-    const msgOwner = await this.faucet.msgOwner();
+    const msgErrorOwner = await this.faucet.msgErrorOwner();
     const previousFaucetBalance = await this.tuki.balanceOf(this.faucet.address);
     // act, assert
     await assert.rejects(
       () => 
         this.faucet.withdraw(this.tuki.address, accounts[1], previousFaucetBalance, { from: accounts[1] })
       ),
-      msgOwner;
+      msgErrorOwner;
   });
 
   it("does not allow double dispense", async () => {
     await this.faucet.dispense(this.tuki.address, accounts[1], {
       from: accounts[1],
     });
-    const msgError = await this.faucet.msgError();
+    const msgErrorTime = await this.faucet.msgErrorTime();
     // act, assert
     await assert.rejects(
       () =>
         this.faucet.dispense(this.tuki.address, accounts[1], {
           from: accounts[1],
         }),
-      msgError
+        msgErrorTime
     );
   });
 
-  it("does not allow to change timers value by not owner", async () => {
-    const newTimer = web3.utils.toBN(10);
-    const msgOwner = await this.faucet.msgOwner();
+  it("does not allow to change period value by not owner", async () => {
+    const newPeriod = web3.utils.toBN(10);
+    const msgErrorOwner = await this.faucet.msgErrorOwner();
     //act, assert
     await assert.rejects(
       () =>
-        this.faucet.setTimer(newTimer, {
+        this.faucet.setPeriod(newPeriod, {
           from: accounts[1],
         }),
-      msgOwner
+      msgErrorOwner
     );
   });
 
   it("does not allow to change dispenseValue by not owner", async () => {
     const newDispenseValue = web3.utils.toBN(10);
-    const msgOwner = await this.faucet.msgOwner();
+    const msgErrorOwner = await this.faucet.msgErrorOwner();
     //act, assert
     await assert.rejects(
       () =>
         this.faucet.setDispenseValue(newDispenseValue, {
           from: accounts[1],
         }),
-      msgOwner
+        msgErrorOwner
     );
   });
 
   it("does not allow to change owner by not owner", async () => {
     const newOwner = accounts[1];
-    const msgOwner = await this.faucet.msgOwner();
+    const msgErrorOwner = await this.faucet.msgErrorOwner();
     //act, assert
     await assert.rejects(
       () =>
         this.faucet.setOwner(newOwner, {
           from: accounts[1],
         }),
-      msgOwner
+        msgErrorOwner
     );
   });
 });
