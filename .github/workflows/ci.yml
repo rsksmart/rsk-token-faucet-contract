@@ -20,10 +20,10 @@ jobs:
         node-version: 14.x
 
     - name: Install dependencies
-      run: ***REMOVED***
+      run: npm i
 
     - name: Unit test smart contracts
-      run: ***REMOVED***
+      run: npx truffle run coverage
       
     - name: Coveralls
       uses: coverallsapp/github-action@master
